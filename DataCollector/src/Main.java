@@ -1,10 +1,8 @@
-import java.io.IOException;
-
 public class Main
 {
     public static void main(String[] args)
     {
-        /**
+ /**
         System.out.println("Поиск файлов json и csv:");
         FileSearch fileSearch = new FileSearch();
         System.out.println(fileSearch.fileSearch("data/folders/"));
@@ -27,23 +25,30 @@ public class Main
         jsonParser.getStationsAndDepths().forEach(System.out::println);
 
         System.out.println("Парсинг веб-сайта");
-        WebParser webParser = new WebParser();
-        webParser.setUrl("https://skillbox-java.github.io/");
+        WebParser webParser = new WebParser("https://skillbox-java.github.io/");
+        System.out.println("Станции и номера линий:");
+        System.out.println(webParser.getStations());
+        System.out.println("Имена линий и их номера");
+        System.out.println(webParser.getLines());
+
+
 //        System.out.println("Список линий: \n");
 ////        webParser.getLines().forEach(System.out::println);
-        System.out.println("Список станций: \n");
-        webParser.getStations().forEach(System.out::println);
+//        System.out.println("Список станций: \n");
+//        webParser.getStations().forEach(System.out::println);
 //        System.out.println(webParser.getHtmlCode());
-**/
+
         System.out.println("Создание и запись JSON-файла:");
         JsonFileOutput output = new JsonFileOutput();
         try {
-            output.createFiles();
-            output.writeMapJson();
+            output.writeStationsJson();
         } catch (IOException e) {
             e.printStackTrace();
         }
+  */
 
-
+        FileSearch fileSearch = new FileSearch("data/folders");
+//        System.out.println(fileSearch.fileNames());
+        System.out.println(fileSearch.getFilePath("dates-2.csv"));
     }
 }

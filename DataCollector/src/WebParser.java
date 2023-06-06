@@ -2,83 +2,60 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WebParser {
 
-    private Document doc;
     private String url;
 
-    public void setUrl(String url) {
+    public WebParser(String url) {
         this.url = url;
     }
 
-    private Elements elementsSelect(String sccQuery) {
+    private Document getDocument()
+    {
+        Document doc = null;
         try {
             doc = Jsoup.connect(url).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return doc.select(sccQuery);
+        return doc;
     }
 
-    public String getHtmlCode()
+    public List<StationsMskMetro> getStations()
     {
-        String htmlCode = "";
-        for (Element e:
-             elementsSelect("html")) {
-            htmlCode += e.toString();
-        }
-        return htmlCode;
-    }
-
-    public List<StationMskMetro> getStations()
-    {
-        String attribute = "data-depend-set";
-        List<StationMskMetro> stations = new ArrayList<>();
-        Elements elements =
-                elementsSelect("#metrodata");
-        String lineNumber = elements.attr(attribute);
-
-//        for (String station:
-//             parseElementsList(elements)) {
-//            stations.add(new StationMskMetro(station, lineNumber));
-//        }
+        List<StationsMskMetro> allStations = new ArrayList<>();
+        Elements elements = getDocument().getElementsByClass("js-metro-stations t-metrostation-list-table");
         for (Element element:
              elements) {
-            stations.add(new StationMskMetro(element.text(), lineNumber));
-            }
-        return stations;
+            List<String> stations = new ArrayList<>();
+            Elements nameStations = element.getElementsByClass("single-station");
+            nameStations.forEach(el -> stations.add(el.text()));
+            allStations.add(new StationsMskMetro(stations, element.attr("data-line")));
         }
-
-
-    private List<String> parseElementsList(Elements elements) {
-        List<String> listStations = new ArrayList<>();
-        String elementsToString = elements.text();
-        String[] stationsArray = elementsToString.split("[0-9]+[.]*");
-        for (int i = 1; i < stationsArray.length; i++) {
-            listStations.add(stationsArray[i].trim());
-        }
-        return listStations;
+        return allStations;
     }
 
     public List<LineMskMetro> getLines()
     {
         List<LineMskMetro> linesMskMetro = new ArrayList<>();
-//        int i = 1;
-//        for (Element element:
-//                elementsSelect()) {
-//            if (!element.text().matches(regex)) {
-//                linesMskMetro.add(new LineMskMetro(element.text(), Integer.toString(i)));
-//                i++;
-//            } else {
-//                continue;
-//            }
-//        }
+        Elements elementsLine1 = getDocument().
+                getElementsByClass("js-toggle-depend s-depend-control-single  s-depend-control-active");
+        Elements allLine = getDocument().getElementsByClass("js-toggle-depend s-depend-control-single  ");
+        Element line1 = elementsLine1.get(0);
+        linesMskMetro.add(new LineMskMetro(elementsLine1.text(),
+                line1.getElementsByTag("span").attr("data-line")));
+
+        allLine.forEach(
+                el -> linesMskMetro.add(new LineMskMetro(el.text(),
+                        el.getElementsByTag("span").attr("data-line")))
+        );
 
         return linesMskMetro;
+
     }
 
 }

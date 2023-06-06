@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class LineMskMetro {
 
     private String number;
@@ -11,7 +9,7 @@ public class LineMskMetro {
     }
 
     public String toString(){
-        return  "Линия: " + name + "\n" +
+        return  "\nЛиния: " + name + "\n" +
                 "Номер линии: " + number + "\n";
     }
 }
