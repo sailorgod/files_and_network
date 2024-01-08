@@ -8,11 +8,7 @@ import java.util.List;
 
 public class WebParser {
 
-    private String url;
-
-    public WebParser(String url) {
-        this.url = url;
-    }
+    private final String url = "https://skillbox-java.github.io/";
 
     private Document getDocument()
     {
@@ -25,32 +21,41 @@ public class WebParser {
         return doc;
     }
 
-    public List<StationsMskMetro> getStations()
+    public List<Station> getStations()
     {
-        List<StationsMskMetro> allStations = new ArrayList<>();
-        Elements elements = getDocument().getElementsByClass("js-metro-stations t-metrostation-list-table");
+        List<Station> stations = new ArrayList<>();
+        Elements elements = getDocument().
+                getElementsByClass("js-metro-stations t-metrostation-list-table");
         for (Element element:
              elements) {
-            List<String> stations = new ArrayList<>();
             Elements nameStations = element.getElementsByClass("single-station");
-            nameStations.forEach(el -> stations.add(el.text()));
-            allStations.add(new StationsMskMetro(stations, element.attr("data-line")));
+            String line =  element.attr("data-line");
+            nameStations.forEach(element1 -> {
+                boolean hasConnect = false;
+                String connect = "";
+                if (element1.getElementsByClass("t-icon-metroln").attr("title") != "") {
+                    hasConnect = true;
+                    connect = element1.getElementsByClass("t-icon-metroln").attr("title");
+                }
+                stations.add(new Station(element1.text(), line, connect, hasConnect));
+            });
+//
         }
-        return allStations;
+        return stations;
     }
 
-    public List<LineMskMetro> getLines()
+    public List<Line> getLines()
     {
-        List<LineMskMetro> linesMskMetro = new ArrayList<>();
+        List<Line> linesMskMetro = new ArrayList<>();
         Elements elementsLine1 = getDocument().
                 getElementsByClass("js-toggle-depend s-depend-control-single  s-depend-control-active");
         Elements allLine = getDocument().getElementsByClass("js-toggle-depend s-depend-control-single  ");
         Element line1 = elementsLine1.get(0);
-        linesMskMetro.add(new LineMskMetro(elementsLine1.text(),
+        linesMskMetro.add(new Line(elementsLine1.text(),
                 line1.getElementsByTag("span").attr("data-line")));
 
         allLine.forEach(
-                el -> linesMskMetro.add(new LineMskMetro(el.text(),
+                el -> linesMskMetro.add(new Line(el.text(),
                         el.getElementsByTag("span").attr("data-line")))
         );
 

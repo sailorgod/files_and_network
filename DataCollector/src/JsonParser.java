@@ -4,43 +4,43 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class JsonParser {
 
-    private String jsonFile;
-    private JsonNode jsonNode;
+    private final String path;
 
-    public void getJsonFile(String path) throws IOException{
-        jsonFile = Files.readString(Paths.get(path));
-        ObjectMapper objectMapper = new ObjectMapper();
-        jsonNode = objectMapper.readTree(jsonFile);
+    public JsonParser(String path){
+        this.path = path;
     }
-    
-//   public Depths getStationsAndDepths()
-//   {
-//       List<String> depths = jsonNode.findValuesAsText("depth");;
-//       List<String> stations = jsonNode.findValuesAsText("station_name");
-//
-//       Depths stationsAndDepth = new Depths(depths, stations);
-//       return stationsAndDepth;
-//   }
 
-    public List<Depth> getStationsAndDepths()
+    private JsonNode getJsonFile()
     {
-        List<String> depths = jsonNode.findValuesAsText("depth");;
-        List<String> stations = jsonNode.findValuesAsText("station_name");
-        List<Depth> stationsAndDepth = new ArrayList<>();
+        String jsonFile = null;
+        try {
+            jsonFile = Files.readString(Paths.get(path));
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readTree(jsonFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<DepthAndStation> stationsAndDepths()
+    {
+        List<String> depths = getJsonFile().findValuesAsText("depth");;
+        List<String> stations = getJsonFile().findValuesAsText("station_name");
+        List<DepthAndStation> listDepthsAndStations = new ArrayList<>();
 
         for (int i = 0; i < depths.size() && i < stations.size(); i++) {
             String depth = depths.get(i);
             String station = stations.get(i);
-            stationsAndDepth.add(new Depth(depth, station));
+            listDepthsAndStations.add(new DepthAndStation(station, depth));
         }
-        //TODO Отсортировать коллекцию по глубине метро
-//        Collections.sort();
-        return stationsAndDepth;
+
+        listDepthsAndStations.sort(Comparator.comparing(DepthAndStation::getDepth));
+        return listDepthsAndStations;
     }
 
 }

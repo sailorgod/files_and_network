@@ -1,43 +1,41 @@
-import java.time.LocalDate;
+import java.util.List;
 
-public class Station
-{
-    private String name;
-    private String line;
-    private String date;
-    private String depth;
-    private boolean hasConnection;
+public class Station {
 
-    public Station(String name, String line, String date, String depth, boolean hasConnection) {
-        this.name = name;
-        this.line = line;
-        this.date = date;
-        this.depth = depth;
+    private final String station;
+    private final String lineNumber;
+    private final String connect;
+    private final boolean hasConnection;
+
+    public Station(String stations, String lineNumber, String connect, boolean hasConnection) {
+        this.lineNumber = lineNumber;
+        this.station = stations;
+        this.connect = connect;
         this.hasConnection = hasConnection;
     }
 
-//    private void String
-
-    public String getName() {
-        return name;
+    @Override
+    public String toString() {
+        return "\nСтанция: " + station + "\n" +
+                "Номер линии: " + lineNumber + "\n" +
+                "Наличие перехода: " + hasConnection + "\n";
     }
 
-    public String getLine() {
-        return line;
+    public String getStation() {
+        return station;
     }
 
-    public String getDate() {
-        return date;
+    public String getLineNumber() {
+        return lineNumber;
     }
 
-    public String getDepth() {
-        return depth;
+
+    public String getConnect() {
+        return connect;
     }
+
 
     public boolean isHasConnection() {
         return hasConnection;
     }
-
-
-
 }
